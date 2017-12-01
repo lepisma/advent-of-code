@@ -9,17 +9,15 @@
   (let ((s-num (write-to-string num)))
     (concatenate 'string s-num (list (char s-num 0)))))
 
-(defun add-numbers (s-num &optional (acc 0))
+(defun add-numbers (s-num offset &optional (acc 0))
   "Solve the problem with string number"
-  (if (>= (length s-num) 2)
+  (if (>= (- (length s-num) offset) 1)
       (let ((f (char s-num 0))
-            (s (char s-num 1)))
+            (s (char s-num offset)))
         (if (char-equal f s)
-            (add-numbers (subseq s-num 1) (+ (digit-char-p f) acc))
-            (add-numbers (subseq s-num 1) acc)))
+            (add-numbers-two (subseq s-num 1) offset (+ (digit-char-p f) acc))
+            (add-numbers-two (subseq s-num 1) offset acc)))
       acc))
-
-(add-numbers (fix-number input-number))
 
 ;; Part two
 (defun fix-number-two (num)
@@ -28,15 +26,7 @@
          (len/2 (/ (length s-num) 2)))
     (values (concatenate 'string s-num (subseq s-num 0 len/2)) len/2)))
 
-(defun add-numbers-two (s-num len/2 &optional (acc 0))
-  "Solve the part two of the problem with string number"
-  (if (>= (- (length s-num) len/2) 1)
-      (let ((f (char s-num 0))
-            (s (char s-num len/2)))
-        (if (char-equal f s)
-            (add-numbers-two (subseq s-num 1) len/2 (+ (digit-char-p f) acc))
-            (add-numbers-two (subseq s-num 1) len/2 acc)))
-      acc))
+(add-numbers (fix-number input-number) 1)
 
 (multiple-value-bind (sn len/2) (fix-number-two input-number)
   (add-numbers-two sn len/2))
