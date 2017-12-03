@@ -1,4 +1,5 @@
-%% Advent of code day 3
+#!/usr/bin/env escript
+%% Advent of code day 3. 03.erl <input>
 
 -module('03').
 -export([main/1]).
