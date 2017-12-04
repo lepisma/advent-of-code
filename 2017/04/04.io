@@ -1,12 +1,12 @@
 #!/usr/bin/env io
 # Advent of code day 4
 
-List validOne := method(self size == self unique size)
-List validTwo := method(sorted := self map(i, i asMutable sort); sorted validOne)
+List allUnique := method(self size == self unique size)
+List anagramUnique := method(sorted := self map(i, i asMutable sort); sorted allUnique)
 List boolToInt := method(self map(p, if(p, 1, 0)))
 
 lines := File with("./input.txt") openForReading readLines
 tokens := lines map(split)
 
-tokens map(validOne) boolToInt sum println
-tokens map(validTwo) boolToInt sum println
+list("Part one: ", tokens map(allUnique) boolToInt sum) join println
+list("Part two: ", tokens map(anagramUnique) boolToInt sum) join println
