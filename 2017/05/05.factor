@@ -14,11 +14,11 @@ IN: aoc
 : mut-two ( j seq1 i -- seq2 j ) 2dup swap array-nth 3 >= [ dec ] [ inc ] if swap ;
 
 : inc-time ( t1 seq i -- t2 seq i ) rot 1 + rot rot ;
-: done ( seq i -- seq i bool ) over length 1 - dupd >= over 0 < or ;
+: done? ( seq i -- seq i ? ) over length 1 - dupd >= over 0 < or ;
 : jump ( seq i -- j seq i ) 2dup swap array-nth over + rot swapd swap ;
 
-: solve-one ( t1 seq1 i -- t2 ) [ done ] [ inc-time jump mut-one ] until 2drop ;
-: solve-two ( t1 seq1 i -- t2 ) [ done ] [ inc-time jump mut-two ] until 2drop ;
+: solve-one ( t1 seq1 i -- t2 ) [ done? ] [ inc-time jump mut-one ] until 2drop ;
+: solve-two ( t1 seq1 i -- t2 ) [ done? ] [ inc-time jump mut-two ] until 2drop ;
 
 "input.txt" read-input 0 swap 0 solve-one number>string "Part one " print print
 "input.txt" read-input 0 swap 0 solve-two number>string "Part two " print print
