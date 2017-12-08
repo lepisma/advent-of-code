@@ -4,7 +4,46 @@
 #include <stdlib.h>
 
 #define INPUT_SIZE 16
-#define STORE_SIZE 10000
+#define STORE_INIT_SIZE 1000
+
+typedef struct {
+  int size;
+  int capacity;
+  int *data;
+} Store;
+
+void store_init(Store *store) {
+  store->size = 0;
+  store->capacity = STORE_INIT_SIZE;
+  store->data = malloc(sizeof(int) * store->capacity * INPUT_SIZE);
+}
+
+void store_add(Store *store, int array[]) {
+  if (store->size >= store->capacity) {
+    store->capacity *= 2;
+    store->data = realloc(store->data, sizeof(int) * store->capacity * INPUT_SIZE);
+  }
+
+  store->size++;
+  for (int i = 0; i < INPUT_SIZE; i++) {
+    store->data[(store->size - 1) * INPUT_SIZE + i] = array[i];
+  }
+}
+
+int store_index(Store *store, int array[]) {
+  int idx = -1;
+  for (int i = 0; i < store->size; i++) {
+    int match = 0;
+    for (int j = 0; j < INPUT_SIZE; j++) {
+      if (store->data[(i * INPUT_SIZE) + j] == array[j]) match++;
+    }
+    if (match == INPUT_SIZE) {
+      idx = i;
+      break;
+    }
+  }
+  return idx;
+}
 
 int argmax(int *array) {
   int amax = INPUT_SIZE - 1;
@@ -16,27 +55,6 @@ int argmax(int *array) {
     }
   }
   return amax;
-}
-
-int index_in_store(int store[][INPUT_SIZE], int array[]) {
-  int idx = -1;
-  for (int i = 0; i < STORE_SIZE; i++) {
-    int match = 0;
-    for (int j = 0; j < INPUT_SIZE; j++) {
-      if (store[i][j] == array[j]) { match++; }
-    }
-    if (match == INPUT_SIZE) {
-      idx = i;
-      break;
-    }
-  }
-  return idx;
-}
-
-void add_to_store(int store[][INPUT_SIZE], int array[], int pos) {
-  for (int i = 0; i < INPUT_SIZE; i++) {
-    store[pos][i] = array[i];
-  }
 }
 
 void read_input(char file_name[], int array[]) {
@@ -62,19 +80,18 @@ void evolve(int array[]) {
 
 int main() {
   int input[INPUT_SIZE];
-  int store[STORE_SIZE][INPUT_SIZE];
   read_input("input.txt", input);
+  Store store;
+  store_init(&store);
 
   int store_idx;
-  int store_counter = 0;
-
   while (1) {
-    if ((store_idx = index_in_store(store, input)) >= 0) {
+    if ((store_idx = store_index(&store, input)) >= 0) {
       printf("%d\n", store_idx);
-      printf("Part one %d\nPart two %d\n", store_counter, store_counter - store_idx);
+      printf("Part one %d\nPart two %d\n", store.size, store.size - store_idx);
       return 0;
     } else {
-      add_to_store(store, input, store_counter++);
+      store_add(&store, input);
       evolve(input);
     }
   }
