@@ -45,7 +45,7 @@ int store_index(Store *store, int array[]) {
   return idx;
 }
 
-int argmax(int *array) {
+int argmax(int array[]) {
   int amax = INPUT_SIZE - 1;
   int vmax = array[amax];
   for (int i = amax - 1; i >= 0; i--) {
