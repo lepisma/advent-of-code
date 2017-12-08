@@ -1,5 +1,4 @@
-# ribosome.rb 08.dna.rb | xargs -0 ruby -e
-
+#!/usr/bin/env ribosome.rb
 lines = File.readlines('input.txt')
 .regs = Hash.new 0
 .mem = []
