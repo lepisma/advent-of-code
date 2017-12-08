@@ -1,16 +1,13 @@
-# ribosome.rb 08.dna.rb | xargs -0 python -c
+# ribosome.rb 08.dna.rb | xargs -0 ruby -e
 
 lines = File.readlines('input.txt')
-.from collections import defaultdict
-.regs = defaultdict(int)
+.regs = Hash.new 0
 .mem = []
 lines.each do |line|
-  s = line.split(' ')
-  s[0] = "regs['#{s[0]}']"
-  s[4] = "regs['#{s[4]}']"
+  s = line.split ' '
+  s[0] = "regs['#{s[0]}']"; s[4] = "regs['#{s[4]}']"
   s[1] = s[1] == 'inc' ? '+=' : '-='
-.@{s.join" "} else 0
-.mem += [r for r in regs.values()]
+.@{s.join " "}
+.mem += regs.map { |k, v| v }
 end
-.print(f"Part one: {max([r for r in regs.values()])}")
-.print(f"Part two: {max(mem)}")
+.puts "Part one: #{regs.map { |k, v| v }.max}\nPart two: #{mem.max}"
