@@ -87,7 +87,6 @@ int main() {
   int store_idx;
   while (1) {
     if ((store_idx = store_index(&store, input)) >= 0) {
-      printf("%d\n", store_idx);
       printf("Part one %d\nPart two %d\n", store.size, store.size - store_idx);
       return 0;
     } else {
