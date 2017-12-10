@@ -1,5 +1,5 @@
 ;; Advent of code day 10
-(ql:quickload '(:alexandria :cl-ppcre))
+(ql:quickload '(:alexandria :serapeum))
 
 (defparameter *input-string* (string-trim '(#\Newline) (alexandria:read-file-into-string "input.txt")))
 
@@ -16,18 +16,13 @@
         (rotatef (aref array x) (aref array y))
         (reverse-subarray array from len (+ at 1)))))
 
-(defun reduce-slice (sequence slice-size func &optional acc)
-  (if (= (length sequence) 0) (nreverse acc)
-      (reduce-slice (subseq sequence slice-size) slice-size func
-                    (cons (apply func (nthcdr slice-size sequence)) acc))))
-
 (defun update-array (array lengths &optional (pos 0) (skip 0))
   (if (null lengths) array
       (update-array (reverse-subarray array pos (car lengths))
                     (cdr lengths) (+ pos (car lengths) skip) (+ skip 1))))
 
 ;; Part one
-(let* ((lengths (mapcar #'parse-integer (cl-ppcre:split "," *input-string*)))
+(let* ((lengths (mapcar #'parse-integer (serapeum:split-sequence #\, *input-string*)))
        (numbers (arange 256))
        (results (update-array numbers lengths)))
   (* (aref results 0) (aref results 1)))
@@ -36,4 +31,4 @@
 (let* ((lengths `(,@(map 'list #'char-code *input-string*) 17 31 73 47 23))
        (numbers (arange 256))
        (results (update-array numbers (repeat lengths 64))))
-  (format nil "~{~(~2,'0x~)~}" (reduce-slice (map 'list #'identity results) 16 #'logxor)))
+  (format nil "~{~(~2,'0x~)~}" (mapcar (lambda (slice) (reduce #'logxor slice)) (serapeum:batches results 16))))
