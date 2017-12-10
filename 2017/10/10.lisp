@@ -39,6 +39,5 @@
                              '(17 31 73 47 23)))
        (numbers (arange 256))
        (results (update-array numbers (repeat lengths 64))))
-  (format nil "~{~(~A~)~}"
-          (mapcar (lambda (x) (write-to-string x :base 16))
-                  (reduce-slice (map 'list #'identity results) 16 #'logxor))))
+  (format nil "~{~(~2,'0x~)~}"
+          (reduce-slice (map 'list #'identity results) 16 #'logxor)))
