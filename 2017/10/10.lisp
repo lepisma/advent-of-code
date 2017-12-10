@@ -9,12 +9,11 @@
 (defun arange (limit)
   (make-array limit :initial-contents (alexandria:iota limit :start 0)))
 
-(defun reverse-subarray (array from len &optional (at 0))
-  (if (= at (floor len 2)) array
-      (let ((x (mod (+ from at) (length array)))
-            (y (mod (- (+ from len) (+ at 1)) (length array))))
-        (rotatef (aref array x) (aref array y))
-        (reverse-subarray array from len (+ at 1)))))
+(defun reverse-subarray (array from len)
+  (let ((array (alexandria:rotate array (- from)))
+        (slice (subseq array 0 len)))
+    (setf (subseq array 0 len) (nreverse slice))
+    (alexandria:rotate array from)))
 
 (defun update-array (array lengths &optional (pos 0) (skip 0))
   (if (null lengths) array
