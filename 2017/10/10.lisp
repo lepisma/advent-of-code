@@ -1,7 +1,7 @@
 ;; Advent of code day 10
+(ql:quickload '(:alexandria :cl-ppcre))
 
-(ql:quickload :alexandria)
-(ql:quickload :cl-ppcre)
+(defparameter *input-string* (string-trim '(#\Newline) (alexandria:read-file-into-string "input.txt")))
 
 (defun repeat (sequence times)
   (apply #'concatenate 'list (make-list times :initial-element sequence)))
@@ -27,17 +27,13 @@
                     (cdr lengths) (+ pos (car lengths) skip) (+ skip 1))))
 
 ;; Part one
-(let* ((lengths (mapcar #'parse-integer
-                        (cl-ppcre:split "," (alexandria:read-file-into-string "input.txt"))))
+(let* ((lengths (mapcar #'parse-integer (cl-ppcre:split "," *input-string*)))
        (numbers (arange 256))
        (results (update-array numbers lengths)))
   (* (aref results 0) (aref results 1)))
 
 ;; Part two
-(let* ((lengths (concatenate 'list
-                             (butlast (map 'list #'identity (alexandria:read-file-into-byte-vector "input.txt")))
-                             '(17 31 73 47 23)))
+(let* ((lengths `(,@(map 'list #'char-code *input-string*) 17 31 73 47 23))
        (numbers (arange 256))
        (results (update-array numbers (repeat lengths 64))))
-  (format nil "~{~(~2,'0x~)~}"
-          (reduce-slice (map 'list #'identity results) 16 #'logxor)))
+  (format nil "~{~(~2,'0x~)~}" (reduce-slice (map 'list #'identity results) 16 #'logxor)))
