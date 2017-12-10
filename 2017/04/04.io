@@ -8,5 +8,5 @@ List boolToInt := method(self map(p, if(p, 1, 0)))
 lines := File with("./input.txt") openForReading readLines
 tokens := lines map(split)
 
-list("Part one: ", tokens map(allUnique) boolToInt sum) join println
-list("Part two: ", tokens map(anagramUnique) boolToInt sum) join println
+"Part one: #{tokens map(allUnique) boolToInt sum}" interpolate println
+"Part two: #{tokens map(anagramUnique) boolToInt sum}" interpolate println
