@@ -1,6 +1,8 @@
 ;; Advent of code day 14
 (ql:quickload '(:alexandria))
 
+(load #p"../10/knot-hash.lisp")
+
 (defparameter *input-string* (string-trim '(#\Newline) (alexandria:read-file-into-string "input.txt")))
 (defparameter *size* 128)
 
