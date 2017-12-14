@@ -19,15 +19,17 @@
   (if (null lengths) array
       (update-array (reverse-subarray array pos (car lengths))
                     (cdr lengths) (+ pos (car lengths) skip) (+ skip 1))))
-
 ;; Part one
 (let* ((lengths (mapcar #'parse-integer (serapeum:split-sequence #\, *input-string*)))
        (numbers (arange 256))
        (results (update-array numbers lengths)))
   (* (aref results 0) (aref results 1)))
 
+(defun knot-hash (input)
+  (let* ((lengths `(,@(map 'list #'char-code input) 17 31 73 47 23))
+         (numbers (arange 256))
+         (results (update-array numbers (repeat lengths 64))))
+    (format nil "~{~(~2,'0x~)~}" (mapcar (lambda (slice) (reduce #'logxor slice)) (serapeum:batches results 16)))))
+
 ;; Part two
-(let* ((lengths `(,@(map 'list #'char-code *input-string*) 17 31 73 47 23))
-       (numbers (arange 256))
-       (results (update-array numbers (repeat lengths 64))))
-  (format nil "~{~(~2,'0x~)~}" (mapcar (lambda (slice) (reduce #'logxor slice)) (serapeum:batches results 16))))
+(knot-hash *input-string*)
