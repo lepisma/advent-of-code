@@ -22,14 +22,16 @@ Cluster fromFile := method(name,
   size ::= lines size
 )
 
-Position := Object clone
-Position start := method(s,
-  m := (s / 2) floor;
-  x ::= m; y ::= m; dir ::= 1
+Virus := Object clone
+Virus start := method(cls, pos,
+  cls ::= cls
+  size := (cls size / 2) floor
+  x ::= size; y ::= size; dir ::= 1
+  infected ::= 0
 )
-Position left := method(dir = (dir + 1) % 4)
-Position right := method(dir = if(dir == 0, 3, dir - 1))
-Position move := method(
+Virus left := method(dir = (dir + 1) % 4)
+Virus right := method(dir = if(dir == 0, 3, dir - 1))
+Virus step := method(
   dir switch(
     0, y = (y + 1),
     1, x = (x - 1),
@@ -37,50 +39,33 @@ Position move := method(
     3, x = (x + 1)
   )
 )
-
-Virus := Object clone
-Virus start := method(cls, pos,
-  cls ::= cls; pos ::= pos; infected ::= 0
-)
-Virus step := method(
-  pid := posId(pos x, pos y)
+Virus burst := method(
+  pid := posId(x, y)
   cls getNode(pid) switch(
-    0, pos left; cls setNode(pid, 1); pos move; infected = infected + 1,
-    1, pos right; cls setNode(pid, 0); pos move
+    0, left; cls setNode(pid, 1); step; infected = infected + 1,
+    1, right; cls setNode(pid, 0); step
   )
 )
 
+virus := Virus clone
+
 cls := Cluster clone
 cls fromFile("input.txt")
-
-pos := Position clone
-pos start(cls size)
-
-virus := Virus clone
-virus start(cls, pos)
-
-10000 repeat(virus step)
+virus start(cls)
+10000 repeat(virus burst)
 "Part one: #{virus infected}" interpolate println
 
-// Part two virus
-Virus step := method(
-  pid := posId(pos x, pos y)
+Virus burst := method(
+  pid := posId(x, y)
   cls getNode(pid) switch(
-    0, pos left; cls setNode(pid, 2); pos move,
-    1, pos right; cls setNode(pid, 3); pos move,
-    2, cls setNode(pid, 1); pos move; infected = infected + 1,
-    3, pos right; pos right; cls setNode(pid, 0); pos move
+    0, left; cls setNode(pid, 2); step,
+    1, right; cls setNode(pid, 3); step,
+    2, cls setNode(pid, 1); step; infected = infected + 1,
+    3, right; right; cls setNode(pid, 0); step
   )
 )
 
-cls := Cluster clone
 cls fromFile("input.txt")
-
-pos := Position clone
-pos start(cls size)
-
-virus := Virus clone
-virus start(cls, pos)
-
-10000000 repeat(virus step)
+virus start(cls)
+10000000 repeat(virus burst)
 "Part two: #{virus infected}" interpolate println
