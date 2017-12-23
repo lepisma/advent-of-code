@@ -1,22 +1,31 @@
 #!/usr/bin/env io
 
-posId := method(x, y, x .. "-" .. y)
-
 Cluster := Object clone
-Cluster setNode := method(key, value,
-  nodes atPut(key, value)
+Cluster setNode := method(x, y, value,
+  xid := x asString
+  if(nodes at(xid) == nil,
+    nodes atPut(xid, Map clone)
+  )
+  nodes at(xid) atPut(y asString, value)
 )
-Cluster getNode := method(key,
-  val := nodes at(key)
-  if(val, val, 0)
+Cluster getNode := method(x, y,
+  xMap := nodes at(x asString)
+  if(xMap,
+    val := xMap at(y asString)
+    if(val, val, 0),
+    0
+  )
 )
 Cluster fromLines := method(lines,
   nodes ::= Map clone
   size ::= lines size
   for(x, 0, lines size - 1,
+    if(x == 0,
+      nodes atPut(x asString, Map clone)
+    )
     for(y, 0, lines at(x) size - 1,
       if(lines at(x) at(y) == 35,
-        setNode(posId(x, y), 1)
+        setNode(x, y, 1)
       )
     )
   )
@@ -41,10 +50,9 @@ Virus step := method(
   )
 )
 Virus burst := method(
-  pid := posId(x, y)
-  cls getNode(pid) switch(
-    0, left; cls setNode(pid, 1); step; infected = infected + 1,
-    1, right; cls setNode(pid, 0); step
+  cls getNode(x, y) switch(
+    0, left; cls setNode(x, y, 1); step; infected = infected + 1,
+    1, right; cls setNode(x, y, 0); step
   )
 )
 
@@ -58,16 +66,15 @@ virus start(cls)
 "Part one: #{virus infected}" interpolate println
 
 Virus burst := method(
-  pid := posId(x, y)
-  cls getNode(pid) switch(
-    0, left; cls setNode(pid, 2); step,
-    1, right; cls setNode(pid, 3); step,
-    2, cls setNode(pid, 1); step; infected = infected + 1,
-    3, right; right; cls setNode(pid, 0); step
+  cls getNode(x, y) switch(
+    0, left; cls setNode(x, y, 2); step,
+    1, right; cls setNode(x, y, 3); step,
+    2, cls setNode(x, y, 1); step; infected = infected + 1,
+    3, right; right; cls setNode(x, y, 0); step
   )
 )
 
 cls fromLines(lines)
 virus start(cls)
-100000 repeat(virus burst)
+10000000 repeat(virus burst)
 "Part two: #{virus infected}" interpolate println
