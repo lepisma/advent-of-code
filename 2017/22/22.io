@@ -1,23 +1,23 @@
 #!/usr/bin/env io
 
-posId := method(x, y, s, ((x * s) + y) asString)
+posId := method(x, y, x .. "-" .. y)
 
 Cluster := Object clone
 Cluster setNode := method(key, value,
-  if ((value > 0) or (nodes hasKey(key)),
-    nodes atPut(key, value)
-  )
+  nodes atPut(key, value)
 )
 Cluster getNode := method(key,
-  if(nodes hasKey(key), nodes at(key), 0)
+  val := nodes at(key)
+  if(val, val, 0)
 )
-Cluster fromFile := method(name,
+Cluster fromLines := method(lines,
   nodes ::= Map clone
-  lines := File with(name) openForReading readLines
   size ::= lines size
   for(x, 0, lines size - 1,
     for(y, 0, lines at(x) size - 1,
-      setNode(posId(x, y, size), if(lines at(x) at(y) == 46, 0, 1))
+      if(lines at(x) at(y) == 35,
+        setNode(posId(x, y), 1)
+      )
     )
   )
 )
@@ -41,7 +41,7 @@ Virus step := method(
   )
 )
 Virus burst := method(
-  pid := posId(x, y, size)
+  pid := posId(x, y)
   cls getNode(pid) switch(
     0, left; cls setNode(pid, 1); step; infected = infected + 1,
     1, right; cls setNode(pid, 0); step
@@ -50,14 +50,15 @@ Virus burst := method(
 
 virus := Virus clone
 cls := Cluster clone
+lines := File with("input.txt") openForReading readLines
 
-cls fromFile("input.txt")
+cls fromLines(lines)
 virus start(cls)
 10000 repeat(virus burst)
 "Part one: #{virus infected}" interpolate println
 
 Virus burst := method(
-  pid := posId(x, y, size)
+  pid := posId(x, y)
   cls getNode(pid) switch(
     0, left; cls setNode(pid, 2); step,
     1, right; cls setNode(pid, 3); step,
@@ -66,7 +67,7 @@ Virus burst := method(
   )
 )
 
-cls fromFile("input.txt")
+cls fromLines(lines)
 virus start(cls)
-10000000 repeat(virus burst)
+100000 repeat(virus burst)
 "Part two: #{virus infected}" interpolate println
