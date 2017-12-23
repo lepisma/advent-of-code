@@ -48,8 +48,8 @@ Virus burst := method(
 )
 
 virus := Virus clone
-
 cls := Cluster clone
+
 cls fromFile("input.txt")
 virus start(cls)
 10000 repeat(virus burst)
