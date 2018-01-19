@@ -1,7 +1,6 @@
 #!/usr/bin/env hy
 
 (import [collections [deque]])
-(import [tqdm [trange]])
 
 (defn read-commands [file-name]
   (with [fp (open file-name)]
