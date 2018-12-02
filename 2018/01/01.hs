@@ -2,7 +2,7 @@
 {- stack
     --install-ghc
     runghc
- -}
+-}
 
 import Text.Read
 import Data.Maybe
