@@ -47,7 +47,8 @@ main = do
   text <- readFile "input.txt"
   case matchRegex (mkRegex "([0-9]+) players; last marble is worth ([0-9]+) points") text of
     Just nums ->
-      let [nPlayers, maxMarbles] = mapMaybe (readMaybe::String -> Maybe Int) nums in
-      let scores = M.fromList $ zip (take nPlayers [0..]) (repeat 0) in
+      let [nPlayers, maxMarbles] = mapMaybe (readMaybe::String -> Maybe Int) nums
+          scores = M.fromList $ zip (take nPlayers [0..]) (repeat 0) in do
         print $ maximum $ M.elems (loop maxMarbles nPlayers scores)
+        print $ maximum $ M.elems (loop (100 * maxMarbles) nPlayers scores)
     _ -> print "Error in reading input"
