@@ -35,7 +35,7 @@ loop maxMarbles nPlayers =
       | it == maxMarbles + 1 = scores
       | it `mod` 23 == 0 =
           let rIdx = removeIndex cIdx marbles
-              rVal = marbles `S.index` rIdx
+              !rVal = marbles `S.index` rIdx
               newScores = M.adjust (rVal + it +) (it `mod` nPlayers) scores in
             loop' (it + 1) (S.deleteAt rIdx marbles) rIdx newScores
       | otherwise =
