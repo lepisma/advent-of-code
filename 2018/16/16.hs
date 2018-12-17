@@ -16,14 +16,12 @@ data OpCode = Addr
             | Setr | Seti | Gtir | Gtri | Gtrr | Eqir | Eqri
             | Eqrr deriving (Show, Eq, Enum, Ord)
 
-type Args = (Int, Int, Int)
-
 -- Map of opNumber to possible opcodes
 type OpMap = M.Map Int (Set.Set OpCode)
 
 -- The instruction coming from the input
 data Instruction = Instruction { opNumber :: Int
-                               , args :: Args
+                               , args :: (Int, Int, Int)
                                } deriving (Show, Eq)
 
 type Register = [Int]
@@ -52,28 +50,19 @@ parseRegister = between (char '[') (char ']') (sepBy1 parseInt (string ", "))
 
 parseSample :: ReadP Sample
 parseSample = do
-  _ <- string "Before:"
-  _ <- skipSpaces
+  _ <- string "Before:" >> skipSpaces
   bef <- parseRegister
   _ <- skipSpaces
   ins <- parseInstruction
-  _ <- skipSpaces
-  _ <- string "After:"
-  _ <- skipSpaces
+  _ <- skipSpaces >> string "After:" >> skipSpaces
   aft <- parseRegister
   return Sample {before=bef, after=aft, instruction=ins}
 
-parseManySample :: ReadP [Sample]
-parseManySample = sepBy1 parseSample skipSpaces
-
-parseProgram :: ReadP [Instruction]
-parseProgram = sepBy1 parseInstruction skipSpaces
-
 parseInput :: ReadP ([Sample], [Instruction])
 parseInput = do
-  samples <- parseManySample
+  samples <- sepBy1 parseSample skipSpaces
   _ <- skipSpaces
-  program <- parseProgram
+  program <- sepBy1 parseInstruction skipSpaces
   return (samples, program)
 
 -- Operations
@@ -84,7 +73,7 @@ cUpdateReg :: Int -> Bool -> Register -> Register
 cUpdateReg idx True reg = updateReg idx 1 reg
 cUpdateReg idx False reg = updateReg idx 0 reg
 
-applyOp :: OpCode -> Args -> Register -> Register
+applyOp :: OpCode -> (Int, Int, Int) -> Register -> Register
 applyOp Addr (a, b, c) reg = updateReg c (reg !! a + reg !! b) reg
 applyOp Addi (a, b, c) reg = updateReg c (reg !! a + b) reg
 applyOp Mulr (a, b, c) reg = updateReg c (reg !! a * reg !! b) reg
@@ -140,4 +129,4 @@ main = do
   text <- readFile "input.txt"
   case readP_to_S parseInput text of
     [] -> print "Parsing heck!"
-    parse -> let (samples, program) = fst (last parse) in print ((partOne samples), partTwo (findOpMap samples) program)
+    parse -> let (samples, program) = fst (last parse) in print (partOne samples, partTwo (findOpMap samples) program)
