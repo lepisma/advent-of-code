@@ -37,12 +37,9 @@ parseInt = read <$> many1 (satisfy isDigit)
 parseInstruction :: ReadP Instruction
 parseInstruction = do
   op <- parseInt
-  _ <- char ' '
-  a <- parseInt
-  _ <- char ' '
-  b <- parseInt
-  _ <- char ' '
-  c <- parseInt
+  a <- char ' ' >> parseInt
+  b <- char ' ' >> parseInt
+  c <- char ' ' >> parseInt
   return Instruction {opNumber=op, args=(a, b, c)}
 
 parseRegister :: ReadP Register
@@ -50,19 +47,15 @@ parseRegister = between (char '[') (char ']') (sepBy1 parseInt (string ", "))
 
 parseSample :: ReadP Sample
 parseSample = do
-  _ <- string "Before:" >> skipSpaces
-  bef <- parseRegister
-  _ <- skipSpaces
-  ins <- parseInstruction
-  _ <- skipSpaces >> string "After:" >> skipSpaces
-  aft <- parseRegister
+  bef <- string "Before:" >> skipSpaces >> parseRegister
+  ins <- skipSpaces >> parseInstruction
+  aft <- skipSpaces >> string "After:" >> skipSpaces >> parseRegister
   return Sample {before=bef, after=aft, instruction=ins}
 
 parseInput :: ReadP ([Sample], [Instruction])
 parseInput = do
   samples <- sepBy1 parseSample skipSpaces
-  _ <- skipSpaces
-  program <- sepBy1 parseInstruction skipSpaces
+  program <- skipSpaces >> sepBy1 parseInstruction skipSpaces
   return (samples, program)
 
 -- Operations
