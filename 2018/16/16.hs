@@ -48,17 +48,7 @@ parseInstruction = do
   return Instruction {opNumber=op, args=(a, b, c)}
 
 parseRegister :: ReadP Register
-parseRegister = do
-  _ <- char '['
-  a <- parseInt
-  _ <- string ", "
-  b <- parseInt
-  _ <- string ", "
-  c <- parseInt
-  _ <- string ", "
-  d <- parseInt
-  _ <- char ']'
-  return [a, b, c, d]
+parseRegister = between (char '[') (char ']') (sepBy1 parseInt (string ", "))
 
 parseSample :: ReadP Sample
 parseSample = do
